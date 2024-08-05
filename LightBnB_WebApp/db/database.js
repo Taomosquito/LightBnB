@@ -1,6 +1,7 @@
 const properties = require("./json/properties.json");
 const users = require("./json/users.json");
 const { Pool } = require("pg");
+const bcrypt = require("bcrypt");
 
 const pool = new Pool({
   user: "labber",
@@ -17,14 +18,14 @@ const pool = new Pool({
  * @return {Promise<{}>} A promise to the user.
  */
 const getUserWithEmail = function(email) {
-  let resolvedUser = null;
-  for (const userId in users) {
-    const user = users[userId];
-    if (user && user.email.toLowerCase() === email.toLowerCase()) {
-      resolvedUser = user;
-    }
-  }
-  return Promise.resolve(resolvedUser);
+  return pool.query(`SELECT * FROM users WHERE email = $1`, [email])
+    .then((result) => {
+      console.log(result.rows[0]);
+      return result.rows[0];
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
 };
 
 /**
@@ -33,7 +34,14 @@ const getUserWithEmail = function(email) {
  * @return {Promise<{}>} A promise to the user.
  */
 const getUserWithId = function(id) {
-  return Promise.resolve(users[id]);
+  return pool.query(`SELECT * FROM users WHERE id = $1`, [id])
+    .then((result) => {
+      console.log(result.rows[0]);
+      return result.rows[0];
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
 };
 
 /**
@@ -42,10 +50,25 @@ const getUserWithId = function(id) {
  * @return {Promise<{}>} A promise to the user.
  */
 const addUser = function(user) {
-  const userId = Object.keys(users).length + 1;
-  user.id = userId;
-  users[userId] = user;
-  return Promise.resolve(user);
+  const verifyUserNotExist = `SELECT * FROM users WHERE email LIKE $1`
+  const insertQueryString = `INSERT INTO users(name, email, password) VALUES ($1,$2,$3) RETURNING *;`
+  const hashedPassword = bcrypt.hashSync(user.password, 10);
+  return pool.query(verifyUserNotExist, [user.email])
+    .then((result) => {
+      if (!result.rows.length) {
+        return pool.query(insertQueryString,
+          [user.name, user.email, hashedPassword])
+      }
+      throw new Error('user exists in database already')
+    })
+    .then((result) => {
+      console.log(result);
+      return result;
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
+
 };
 
 /// Reservations
@@ -67,11 +90,11 @@ const getAllReservations = function(guest_id, limit = 10) {
  * @param {*} limit The number of results to return.
  * @return {Promise<[{}]>}  A promise to the properties.
  */
+// Refactored Already.
 const getAllProperties = function(options, limit = 10) {
   return pool
     .query(`SELECT * FROM properties LIMIT $1;`, [limit])
     .then((result) => {
-      console.log(result.rows);
       return result.rows;
     })
     .catch((err) => {
