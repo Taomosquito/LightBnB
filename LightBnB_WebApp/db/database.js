@@ -51,7 +51,7 @@ const getUserWithId = function(id) {
  */
 const addUser = function(user) {
   const verifyUserNotExist = `SELECT * FROM users WHERE email LIKE $1`
-  const insertQueryString = `INSERT INTO users(name, email, password) VALUES ($1,$2,$3) RETURNING *;`
+  const insertQueryString = `INSERT INTO users(name, email, password) VALUES ($1,$2,$3) RETURNING id;`
   const hashedPassword = bcrypt.hashSync(user.password, 10);
   return pool.query(verifyUserNotExist, [user.email])
     .then((result) => {
