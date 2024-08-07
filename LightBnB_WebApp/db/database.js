@@ -52,12 +52,12 @@ const getUserWithId = function(id) {
 const addUser = function(user) {
   const verifyUserNotExist = `SELECT * FROM users WHERE email LIKE $1`
   const insertQueryString = `INSERT INTO users(name, email, password) VALUES ($1,$2,$3) RETURNING id;`
-  const hashedPassword = bcrypt.hashSync(user.password, 10);
+  console.log(`sign-up password: ${user.password}`);
   return pool.query(verifyUserNotExist, [user.email])
     .then((result) => {
       if (!result.rows.length) {
         return pool.query(insertQueryString,
-          [user.name, user.email, hashedPassword])
+          [user.name, user.email, user.password])
       }
       throw new Error('user exists in database already')
     })
@@ -78,8 +78,22 @@ const addUser = function(user) {
  * @param {string} guest_id The id of the user.
  * @return {Promise<[{}]>} A promise to the reservations.
  */
-const getAllReservations = function(guest_id, limit = 10) {
-  return getAllProperties(null, 2);
+const getAllReservations = function(guest_id, limit = 20) {
+  /*return getAllProperties(null, 2);*/
+  return pool
+    .query(`
+    SELECT * 
+    FROM reservations
+    JOIN properties ON property_id = properties.id
+    WHERE guest_id = $1
+    LIMIT $2;
+    `, [guest_id, limit])
+    .then((result) => {
+      return result.rows;
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
 };
 
 /// Properties
