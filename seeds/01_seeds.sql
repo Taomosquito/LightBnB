@@ -1,8 +1,8 @@
-INSERT INTO users (name, email, password)
+INSERT INTO users (id, name, email, password)
 VALUES 
-('Eva Stanley', 'sebastianguerra@ymail.com', '$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u'),
-('Louisa Meyer', 'jacksonrose@hotmail.com', '$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u'),
-('Dominic Parks', 'victoriablackwell@outlook.com', '$2a$10$FB/BOAVhpuLvpOREQVmvmezD4ED/.JBIDRh70tGevYzYzQgFId2u');
+(1, 'Eva Stanley', 'sebastianguerra@ymail.com', '$2b$10$q0Mp4TtsrUeSiy5nmMZkDOR9MO5jF4GaLK0rhg5Gjb2mdP61e44jW'),
+(2, 'Louisa Meyer', 'jacksonrose@hotmail.com', '$2b$10$q0Mp4TtsrUeSiy5nmMZkDOR9MO5jF4GaLK0rhg5Gjb2mdP61e44jW'),
+(3, 'Dominic Parks', 'victoriablackwell@outlook.com', '$2b$10$q0Mp4TtsrUeSiy5nmMZkDOR9MO5jF4GaLK0rhg5Gjb2mdP61e44jW');
 
 INSERT INTO properties (owner_id, title, description, thumbnail_photo_url, cover_photo_url, cost_per_night, parking_spaces, number_of_bathrooms, number_of_bedrooms, country, street, city, province, post_code, active)
 VALUES 

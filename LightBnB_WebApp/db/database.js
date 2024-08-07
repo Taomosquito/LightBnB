@@ -80,15 +80,20 @@ const addUser = function(user) {
  */
 const getAllReservations = function(guest_id, limit = 20) {
   /*return getAllProperties(null, 2);*/
+  console.log(guest_id, limit)
   return pool
     .query(`
-    SELECT * 
-    FROM reservations
-    JOIN properties ON property_id = properties.id
-    WHERE guest_id = $1
+    SELECT 
+      reservations.*,
+      properties.*
+    FROM property_reviews
+    JOIN properties ON properties.id = property_reviews.property_id
+    JOIN reservations ON reservations.id = property_reviews.reservation_id
+    WHERE reservations.guest_id = $1
     LIMIT $2;
     `, [guest_id, limit])
     .then((result) => {
+      console.log(result.rows.length);
       return result.rows;
     })
     .catch((err) => {
