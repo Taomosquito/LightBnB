@@ -32,7 +32,6 @@ router.post("/login", (req, res) => {
     }
 
     if (!bcrypt.compareSync(password, user.password)) {
-      console.log(`invalid password: ${password}`)
       return res.send({ error: "error" });
     }
 
