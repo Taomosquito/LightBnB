@@ -59,7 +59,6 @@ const addUser = function(user) {
       throw new Error('user exists in database already')
     })
     .then((result) => {
-      console.log(result);
       return result;
     })
     .catch((err) => {
@@ -86,6 +85,7 @@ const getAllReservations = function(guest_id, limit = 10) {
     JOIN properties ON properties.id = property_reviews.property_id
     JOIN reservations ON reservations.id = property_reviews.reservation_id
     WHERE reservations.guest_id = $1
+    GROUP BY reservations.id, properties.id
     LIMIT $2;
     `, [guest_id, limit])
     .then((result) => {
